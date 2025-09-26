@@ -22,3 +22,6 @@ const files = fs.readdirSync(folder).filter(f => /\.(png|jpg|jpeg)$/i.test(f));
   }
 })();
 
+// Nota: Asegúrate de tener la carpeta 'backup_pngs' con imágenes PNG/JPG en 'public/panoramas' antes de ejecutar este script.
+// Ejecuta este script con: node scripts/convert-panorama-to-webp.js
+// Requiere instalar 'sharp': npm install sharp
