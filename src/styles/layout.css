@@ -1,0 +1,520 @@
+/* Sidebar on desktop, footer on small screens. translucent brand color. */
+
+.page-root {
+  /* keep the app full-bleed so the panorama can fill the screen */
+  display: block;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Sidebar desktop - overlay (doesn't reduce main width) */
+.sidebar {
+  position: fixed;
+  width: 92px;
+  height: 100vh;
+  padding: 8px;
+  /* more transparent so the panorama shows through */
+ /* background: rgba(175, 174, 174, 0.24);*/ /* color actualizado, misma opacidad */ 
+  background: rgba(181, 139, 0, 0.24);
+  backdrop-filter: blur(6px); /* subtle blur to improve contrast */
+/*181,139,0,0.24*/
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 30; /* sit above the canvas but below modals */
+}
+
+/* thumbs container */
+.thumbs {
+  
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+}
+
+/* individual thumbnail button */
+.thumb {
+
+  width: 64px;
+  height: auto; /* permitir espacio para la etiqueta debajo */
+  padding: 6px;
+  padding-top: 30px;
+  border: none;
+  border-radius: 8px;
+  overflow: visible;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.thumb img {
+  width: 28px;    /* tamaño fijo del icono */
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  margin: 0;
+}
+.thumb--active {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  transform: translateY(-2px) scale(1.02);
+  outline: 2px solid rgba(255,255,255,0.08);
+}
+
+/* thumb label visible debajo del icono */
+.thumb-label {
+  color: #fff;
+  font-size: 12px;
+  opacity: 0.95;
+  margin-top: 4px;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Main area fills remaining space */
+.main-content {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* small tweak so the canvas inside main-content fills it */
+.main-content > canvas,
+.main-content > div /* react-three/fiber sometimes wraps canvas in a div */ {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Visit CTA */
+.visit-cta-container {
+  display: none; /* desktop hidden; visible on small screens via media query */
+}
+.visit-cta {
+  background: rgba(37,99,235,0.95);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(37,99,235,0.12);
+}
+
+/* Visit modal styles */
+.visit-modal {
+  width: min(92vw, 760px);
+  max-height: 86vh;
+  background: rgba(175, 147, 94, 1); /* fondo dorado */
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  color: #fff; 
+}
+.visit-modal-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.visit-modal-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* labels / headings inside visit modal */
+.visit-modal h3,
+.visit-modal label,
+.visit-modal p {
+  color: #fff;
+}
+
+/* inputs dentro del modal: más contraste sobre fondo dorado */
+.input {
+  background: rgba(255,255,255,0.10);  /* más visible */
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 10px;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.textarea {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 12px;
+  color: #fff;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* placeholder legible */
+.input::placeholder,
+.textarea::placeholder {
+  color: rgba(255,255,255,0.75);
+}
+
+/* send button */
+.send-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Desktop fixed CTA (bottom-right) */
+.visit-cta-desktop {
+  display: flex;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 99998; /* just below modal overlay */
+}
+@media (max-width: 768px) {
+  .visit-cta-desktop { display: none; } /* hide on mobile (mobile uses centered CTA) */
+}
+
+/* make sure hotspots don't float above modals (defensive) */
+.hotspot, .r3f-html, .drei-html, .html-portal {
+  z-index: 20 !important;
+  pointer-events: auto;
+}
+
+/* modal overlay class (if you want to switch from inline styles later) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 99999;
+}
+
+/* Ensure Drei / R3F Html portals sit below modals by default */
+.r3f-html, .drei-html, .html-portal, .hotspot {
+  z-index: 20 !important;
+  pointer-events: auto;
+}
+
+/* While a modal is open, disable interactions & pointer events on R3F/Drei portals */
+body.modal-open .r3f-html,
+body.modal-open .drei-html,
+body.modal-open .html-portal,
+body.modal-open .hotspot {
+  pointer-events: none !important;
+  opacity: 0.0001 !important; /* visually hide if needed */
+}
+
+/* make sure modal overlays are above everything */
+.modal-overlay, [role="dialog"] {
+  z-index: 99999 !important;
+}
+
+/* Responsive: on small screens turn sidebar into bottom footer */
+@media (max-width: 768px) {
+  .page-root { flex-direction: column; }
+  .sidebar {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    top: auto;
+    height: 72px;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(228, 228, 228, 0.24);
+  }
+
+  /* ensure the canvas doesn't get covered by footer */
+  .main-content { padding-bottom: 92px; }
+}
+
+/* Footer-bar (mobile) - now white background, keep translucency */
+.footer-bar {
+  position: fixed;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  height: 64px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
+  background: rgba(187, 183, 183, 0.95); /* white with slight translucency */
+  
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 60;
+}
+
+/* footer buttons */
+.footer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 400;
+}
+
+/* visit button: gold */
+.footer-btn.visit {
+  background: rgba(175, 147, 94, 1);
+  color: #ffffff;
+  padding: 10px 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(181,139,0,0.18);
+}
+
+/* options small pill */
+.footer-btn.options {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: rgba(221,221,221,0.9);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  justify-content: center;
+  transition: transform 240ms ease;
+}
+
+/* rotate / scale when open */
+.footer-btn.options.is-open {
+  transform: scale(0.98);
+}
+
+/* backdrop que oscurece el resto cuando el accordion está abierto */
+.options-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.36); /* ajusta opacidad si quieres más/menos oscuridad */
+  z-index: 54; /* debajo de .options-accordion (55) y encima del canvas */
+}
+
+/* opciones accordion: asegurar que flota sobre el backdrop */
+.options-accordion {
+  position: fixed;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  max-height: 0;
+  overflow: hidden;
+  border-radius: 1px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  transition: max-height 300ms ease, opacity 250ms ease, transform 250ms ease;
+  opacity: 0;
+  transform: translateY(8px);
+  z-index: 65; /* arriba del backdrop */
+}
+
+/* expanded state */
+.options-accordion.open {
+  max-height: 360px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* inner layout of options */
+.options-inner {
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+/* asegúrate que los botones respondan correctamente */
+.options-inner .thumb {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(17,17,17,0.02);
+  color: #111;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ensure desktop footer uses previous styles via media queries */
+@media (min-width: 769px) {
+  .footer-bar { display: none; }
+  .options-accordion { display: none; }
+}
+
+/* responsive behavior: hide sidebar and show CTA on small screens */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .visit-cta-container { display: flex; position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 70; justify-content: center; }
+  .visit-cta { width: 100%; max-width: 720px; }
+  .main-content { padding-bottom: 92px; }
+}
+
+/* fixes for CTA duplication and footer visibility */
+.visit-cta-container { display: none !important; } /* hide legacy CTA on desktop */
+
+.visit-cta-desktop { display: flex; } /* desktop CTA visible */
+@media (max-width: 768px) {
+  .visit-cta-desktop { display: none; } /* hide desktop CTA on mobile */
+  .footer-bar { display: flex; } /* show footer bar on mobile only */
+}
+
+/* ensure only one CTA visible and footer not overlapping on desktop */
+.footer-bar { display: none; } /* default hidden on desktop */
+
+/* maintain hotspots beneath modals and preserve interactions normally */
+.r3f-html, .drei-html, .html-portal, .hotspot {
+  z-index: 20 !important;
+  pointer-events: auto;
+}
+
+/* when modal-open class is present we still hide interactions (kept) */
+body.modal-open .r3f-html,
+body.modal-open .drei-html,
+body.modal-open .html-portal,
+body.modal-open .hotspot {
+  pointer-events: none !important;
+  opacity: 0.0001 !important;
+}
+
+/* ocultar contenedor antiguo que generaba botón grande doble */
+.visit-cta-container { display: none !important; }
+
+/* footer-bar (mobile) - ensure hidden on desktop (default none) */
+.footer-bar { display: none; }
+
+/* footer-bar visible only on small screens */
+@media (max-width: 768px) {
+  .footer-bar { display: flex; }
+  .visit-cta-desktop { display: none; }
+}
+
+/* ensure hotspot portals sit below modals (defensive) */
+.r3f-html, .drei-html, .html-portal, .hotspot {
+  z-index: 20 !important;
+}
+body.modal-open .r3f-html,
+body.modal-open .drei-html,
+body.modal-open .html-portal,
+body.modal-open .hotspot {
+  pointer-events: none !important;
+  opacity: 0.0001 !important;
+}
+
+/* Ensure visit modal inputs stack and fill width on mobile */
+@media (max-width: 768px) {
+  /* keep modal layout column (already set) but force inputs to be full-width */
+  .visit-modal {
+    flex-direction: column;
+  }
+
+  /* If you used .field-row wrappers, force them to stack */
+  .visit-modal .field-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Force all form controls inside visit modal to take full width and be visible */
+  .visit-modal .input,
+  .visit-modal input,
+  .visit-modal textarea,
+  .visit-modal .textarea,
+  .visit-modal select {
+    width: 100% !important;
+    display: block;
+    box-sizing: border-box;
+    margin: 0;
+    margin-bottom: 10px;
+  }
+
+  /* Make placeholders and text clearly visible on mobile */
+  .visit-modal .input::placeholder,
+  .visit-modal .textarea::placeholder {
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* Ensure send button fills width on mobile */
+  .visit-modal .send-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.site-logo {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  height: 104px;
+  width: auto;
+  z-index: 120;
+  pointer-events: none; /* evita interferir con clicks */
+  user-select: none;
+}
+
+/* tamaño ligeramente menor en móvil */
+@media (max-width: 768px) {
+  .site-logo {
+    top: 10px;
+    right: 1px;
+    height: 60px;
+  }
+}
+
+/* menu icon used in sidebar and accordion - asegurar tamaño correcto */
+.menu-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  object-fit: contain;
+  filter: invert(1) brightness(1.2); /* blanco en sidebar */
+}
+
+.menu-icon.small {
+  width: 18px;
+  height: 18px;
+  filter: none; /* oscuro en mobile */
+}
+
+/* ensure images don't stretch buttons */
+.thumb img.menu-icon { margin: 0; }
+
+/* override for sidebar white icons (ensure visible over translucent bg) */
+@media (min-width: 769px) {
+  .sidebar .menu-icon { filter: invert(1) saturate(0) brightness(1.2); }
+  .sidebar .thumb-label { color: #fff; }
+}
+
+/* mobile: icons dark on light accordion */
+@media (max-width: 768px) {
+  .options-inner .menu-icon.small { filter: none; }
+}

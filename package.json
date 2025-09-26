@@ -1,0 +1,41 @@
+{
+  "name": "virtual-tour-360",
+  "version": "1.0.0",
+  "description": "A responsive Next.js application for a 360 virtual tour of houses.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "convert:panoramas": "node ./scripts/convert-panorama-to-webp.js",
+    "move:pngs": "powershell -ExecutionPolicy Bypass -File ./scripts/move-pngs-to-backup.ps1"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.3.0",
+    "autoprefixer": "^10.4.2",
+    "next": "latest",
+    "postcss": "^8.4.5",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwindcss": "^2.2.19",
+    "three": "^0.159.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.5.2",
+    "eslint": "^7.32.0",
+    "eslint-config-next": "^12.0.7",
+    "sharp": "^0.34.4",
+    "typescript": "^4.5.4"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "360",
+    "virtual-tour",
+    "panorama"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
