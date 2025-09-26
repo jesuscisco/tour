@@ -12,9 +12,9 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
   '/panoramas/1.webp': [
     { id: 'to-inicio', position: [-900, -80, -220], label: 'Ir a inicio', target: '/panoramas/INICIO.webp' },
     { id: 'to-2', position: [500, -80, 500], label: 'Ir a 2', target: '/panoramas/2.webp' },
-    { id: 'to-2b', position: [-7, -1.4, 10], label: 'Ir a 2b', target: '/panoramas/2b.webp' },
+    { id: 'to-2b', position: [-7, -1.4, 10], label: 'Ir a 2b', target: '/panoramas/11.webp' },
   ],
-  '/panoramas/2b.webp': [
+  '/panoramas/11.webp': [
     { id: 'to-1-again', position: [-90, -0, 100], label: 'Ir a 1', target: '/panoramas/1.webp' },
   ],
   '/panoramas/2.webp': [
@@ -26,15 +26,15 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
   ],
   '/panoramas/3.webp': [
     { id: 'to-2-again', position: [700, 0, 200], label: 'Ir a 1', target: '/panoramas/2.webp' },
-    { id: 'to-3b-again', position: [-120, 0, -200], label: 'Ir a 1', target: '/panoramas/3b.webp' },
+    { id: 'to-3b-again', position: [-120, 0, -200], label: 'Ir a 1', target: '/panoramas/12.webp' },
   ],
-  '/panoramas/3b.webp': [
+  '/panoramas/12.webp': [
     { id: 'to-3-again', position: [-120, -5, 75], label: 'Ir a 1', target: '/panoramas/3.webp' },
   ],
   '/panoramas/4.webp': [
     { id: 'to-2-again', position: [-80, -5, -3], label: 'Ir a 1', target: '/panoramas/2.webp' },
   ],
-   '/panoramas/5.webp': [
+  '/panoramas/5.webp': [
     { id: 'to-6', position: [400, 150, -200], label: 'Ir a 1', target: '/panoramas/6.webp' },
     { id: 'to-2-again', position: [500, -400, 50], label: 'Ir a 1', target: '/panoramas/2.webp' },
   ],
