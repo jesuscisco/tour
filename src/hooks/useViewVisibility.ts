@@ -1,40 +1,34 @@
 import { useEffect, useState } from 'react';
 
-const useViewVisibility = (hotspots) => {
-  const [visibleHotspots, setVisibleHotspots] = useState([]);
+interface Hotspot {
+  id: string;
+  position: { x: number; y: number; z?: number }; // agrega z si lo necesitas
+  [key: string]: any; // otras propiedades opcionales
+}
 
-  const checkVisibility = (currentView) => {
+const useViewVisibility = (hotspots: Hotspot[], currentView?: number) => {
+  const [visibleHotspots, setVisibleHotspots] = useState<Hotspot[]>([]);
+
+  const checkVisibility = (view: number) => {
     const visible = hotspots.filter(hotspot => {
       const { position } = hotspot;
-      // Assuming position is an object with x, y coordinates
-      return isHotspotVisible(currentView, position);
+      return isHotspotVisible(view, position);
     });
     setVisibleHotspots(visible);
   };
 
-  const isHotspotVisible = (currentView, position) => {
-    // Implement logic to determine if the hotspot is visible based on the current view
-    // This could involve checking angles or distances
-    // Placeholder logic for visibility check
-    const angleThreshold = 45; // Example threshold
+  const isHotspotVisible = (view: number, position: { x: number; y: number }) => {
+    const angleThreshold = 45; // ejemplo
     const angleToHotspot = Math.atan2(position.y, position.x) * (180 / Math.PI);
-    return Math.abs(currentView - angleToHotspot) < angleThreshold;
+    return Math.abs(view - angleToHotspot) < angleThreshold;
   };
 
   useEffect(() => {
-    const handleViewChange = (currentView) => {
+    if (currentView !== undefined) {
       checkVisibility(currentView);
-    };
-
-    // Assume there's a way to subscribe to view changes
-    // This could be a context or a prop passed down from a parent component
-    // Example: subscribeToViewChanges(handleViewChange);
-
-    return () => {
-      // Cleanup subscription if necessary
-      // Example: unsubscribeFromViewChanges(handleViewChange);
-    };
-  }, [hotspots]);
+    }
+    // Aquí podrías suscribirte a cambios de vista si es necesario
+  }, [hotspots, currentView]);
 
   return visibleHotspots;
 };

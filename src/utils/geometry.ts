@@ -1,10 +1,15 @@
-const calculateDistance = (pointA, pointB) => {
+interface Point {
+  x: number;
+  y: number;
+}
+
+const calculateDistance = (pointA: Point, pointB: Point): number => {
   const dx = pointB.x - pointA.x;
   const dy = pointB.y - pointA.y;
   return Math.sqrt(dx * dx + dy * dy);
 };
 
-const isPointInPolygon = (point, polygon) => {
+const isPointInPolygon = (point: Point, polygon: Point[]): boolean => {
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i].x, yi = polygon[i].y;

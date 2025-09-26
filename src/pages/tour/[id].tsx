@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import ThreeFbsViewer from '../../components/threefbs/ThreeFbsViewer';
 import SidebarMenu from '../../components/molecules/SidebarMenu';
 import FooterNav from '../../components/molecules/FooterNav';
-import { getHouseData } from '../../lib/seo'; // Assume this function fetches house data based on ID
+//import { getHouseData } from '../../lib/seo'; // Assume this function fetches house data based on ID
 
 const TourPage = () => {
   const router = useRouter();
@@ -12,8 +12,8 @@ const TourPage = () => {
 
   useEffect(() => {
     if (id) {
-      const data = getHouseData(id); // Fetch house data based on ID
-      setHouseData(data);
+      //const data = getHouseData(id); // Fetch house data based on ID
+      //setHouseData(data);
     }
   }, [id]);
 
@@ -25,7 +25,7 @@ const TourPage = () => {
     <div className="flex flex-col h-screen">
       <SidebarMenu />
       <main className="flex-grow">
-        <ThreeFbsViewer panoramaUrl={houseData.panoramaUrl} />
+        {/* <ThreeFbsViewer panoramaUrl={houseData.panoramaUrl} /> */}
       </main>
       <FooterNav />
     </div>

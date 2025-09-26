@@ -1,33 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, RefObject } from 'react';
 
-const useTouchControls = (viewerRef) => {
+const useTouchControls = (viewerRef: RefObject<HTMLElement>) => {
   useEffect(() => {
     const viewer = viewerRef.current;
+    if (!viewer) return;
 
-    const handleTouchStart = (event) => {
+    const handleTouchStart = (event: TouchEvent) => {
       // Handle touch start events
     };
 
-    const handleTouchMove = (event) => {
+    const handleTouchMove = (event: TouchEvent) => {
       // Handle touch move events
     };
 
-    const handleTouchEnd = (event) => {
+    const handleTouchEnd = (event: TouchEvent) => {
       // Handle touch end events
     };
 
-    if (viewer) {
-      viewer.addEventListener('touchstart', handleTouchStart);
-      viewer.addEventListener('touchmove', handleTouchMove);
-      viewer.addEventListener('touchend', handleTouchEnd);
-    }
+    viewer.addEventListener('touchstart', handleTouchStart);
+    viewer.addEventListener('touchmove', handleTouchMove);
+    viewer.addEventListener('touchend', handleTouchEnd);
 
     return () => {
-      if (viewer) {
-        viewer.removeEventListener('touchstart', handleTouchStart);
-        viewer.removeEventListener('touchmove', handleTouchMove);
-        viewer.removeEventListener('touchend', handleTouchEnd);
-      }
+      viewer.removeEventListener('touchstart', handleTouchStart);
+      viewer.removeEventListener('touchmove', handleTouchMove);
+      viewer.removeEventListener('touchend', handleTouchEnd);
     };
   }, [viewerRef]);
 
