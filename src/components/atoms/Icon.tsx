@@ -1,13 +1,15 @@
-import React from 'react';
+import React from "react";
+
+type IconName = "home" | "info"; // aquí agregas más claves si creces el set de íconos
 
 interface IconProps {
-  name: string;
+  name: IconName;
   size?: number;
   color?: string;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 24, color = 'currentColor' }) => {
-  const icons = {
+const Icon: React.FC<IconProps> = ({ name, size = 24, color = "currentColor" }) => {
+  const icons: Record<IconName, JSX.Element> = {
     home: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -30,10 +32,9 @@ const Icon: React.FC<IconProps> = ({ name, size = 24, color = 'currentColor' }) 
         <path d="M12 0a12 12 0 1 0 12 12A12.014 12.014 0 0 0 12 0zm1 17h-2v-2h2zm0-4h-2V7h2z" />
       </svg>
     ),
-    // Add more icons as needed
   };
 
-  return <>{icons[name] || null}</>;
+  return icons[name] ?? null;
 };
 
 export default Icon;
