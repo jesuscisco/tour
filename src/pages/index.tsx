@@ -16,16 +16,21 @@ export default function Home() {
   const [current, setCurrent] = useState('/panoramas/INICIO.webp');
   const hotspots = HOTSPOTS_MAP[current] ?? [];
   const [openModal, setOpenModal] = useState<ModalKey>(null);
-  const [openVisitModal, setOpenVisitModal] = useState(false);
   const [openOptionsModal, setOpenOptionsModal] = useState(false); // mobile options menu
+  const WHATSAPP_URL = 'https://api.whatsapp.com/send/?phone=526623619110&text=Hola%2C+estoy+interesado%2Fa+en+m%C3%A1s+informaci%C3%B3n.&type=phone_number&app_absent=0';
+  const handleVisitClick = () => {
+    if (typeof window !== 'undefined') {
+      window.open(WHATSAPP_URL, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   // add a global class while any modal is open so we can lower R3F/Drei portals
   useEffect(() => {
-    const anyOpen = !!openModal || openVisitModal || openOptionsModal;
+    const anyOpen = !!openModal || openOptionsModal;
     if (anyOpen) document.body.classList.add('modal-open');
     else document.body.classList.remove('modal-open');
     return () => { document.body.classList.remove('modal-open'); };
-  }, [openModal, openVisitModal, openOptionsModal]);
+  }, [openModal, openOptionsModal]);
 
   const handleHotspotClick = (id: string) => {
     const h = hotspots.find(x => x.id === id);
@@ -70,7 +75,7 @@ export default function Home() {
 
       {/* Desktop fixed CTA (bottom-right) - igual diseño que footer móvil */}
       <div className="visit-cta-desktop">
-        <button className="footer-btn visit" onClick={() => setOpenVisitModal(true)} aria-label="Agenda tu Visita">
+        <button className="footer-btn visit" onClick={handleVisitClick} aria-label="Agenda tu Visita">
           <img src="/icons/calendar.svg" alt="" className="menu-icon small calendar-icon" style={{ marginRight: 8 }} />
           <span>Agenda tu Visita</span>
         </button>
@@ -78,7 +83,7 @@ export default function Home() {
 
       {/* Footer-bar (mobile): shows CTA and options button */}
       <div className="footer-bar" role="toolbar" aria-label="Acciones rápidas">
-        <button className="footer-btn visit" onClick={() => setOpenVisitModal(true)} aria-label="Agenda tu Visita">
+        <button className="footer-btn visit" onClick={handleVisitClick} aria-label="Agenda tu Visita">
           <img src="/icons/calendar.svg" alt="" className="menu-icon small calendar-icon" style={{ marginRight: 8 }} />
           <span>Agenda tu Visita</span>
         </button>
@@ -157,7 +162,6 @@ export default function Home() {
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-            
               borderRadius: 10,
               overflow: 'hidden',
               display: 'flex',
@@ -181,68 +185,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
-      {/* Responsive CTA (shown on small screens via CSS) */}
-      <div className="visit-cta-container">
-        <button className="visit-cta" onClick={() => setOpenVisitModal(true)} aria-label="Agenda tu Visita">Agenda tu Visita</button>
-      </div>
-
-      {/* Visit modal (responsive) */}
-      {openVisitModal && (
-        <div role="dialog" aria-modal="true" aria-label="INGRESA TUS DATOS" onClick={() => setOpenVisitModal(false)} style={{
-          position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(0,0,0,0.6)', zIndex: 99999, /* ensure modal overlays everything */
-        }}>
-          <div onClick={(e) => e.stopPropagation()} className="visit-modal">
-            <div className="visit-modal-header">
-              <h3 style={{ margin: 0 }}>INGRESA TUS DATOS</h3>
-              <button onClick={() => setOpenVisitModal(false)} className="visit-modal-close" aria-label="Cerrar">✕</button>
-            </div>
-
-            <VisitForm onClose={() => setOpenVisitModal(false)} />
-          </div>
-        </div>
-      )}
     </div>
-  );
-}
-
-/* small VisitForm component */
-function VisitForm({ onClose }: { onClose: () => void }) {
-  const [form, setForm] = useState({ nombre: '', apellidos: '', whatsapp: '', email: '', mensaje: '' });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Enviar datos', form);
-    // aquí enviar al backend o mostrar confirmación
-    alert('Datos enviados (simulado)');
-    onClose();
-  };
-
-  return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        <input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre" required className="input" />
-        <input name="apellidos" value={form.apellidos} onChange={handleChange} placeholder="Apellidos" required className="input" />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        <input name="whatsapp" value={form.whatsapp} onChange={handleChange} placeholder="WhatsApp" className="input" />
-        <input name="email" value={form.email} onChange={handleChange} placeholder="Correo electrónico" type="email" className="input" />
-      </div>
-
-      <textarea name="mensaje" value={form.mensaje} onChange={handleChange} placeholder="Mensaje" rows={6} className="textarea" />
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button type="submit" className="send-btn">
-          <img src="/icons/mail.svg" alt="" className="menu-icon" style={{ marginRight: 8 }} />
-          Enviar Datos
-        </button>
-      </div>
-    </form>
   );
 }
