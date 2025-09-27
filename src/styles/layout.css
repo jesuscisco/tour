@@ -193,10 +193,14 @@
   .visit-cta-desktop { display: none; } /* hide on mobile (mobile uses centered CTA) */
 }
 
-/* make sure hotspots don't float above modals (defensive) */
-.hotspot, .r3f-html, .drei-html, .html-portal {
+/* Drei/Html overlay should not block drags; hotspots remain clickable */
+.r3f-html, .drei-html, .html-portal {
   z-index: 20 !important;
-  pointer-events: auto;
+  pointer-events: none; /* let canvas receive drags by default */
+}
+.hotspot {
+  z-index: 21 !important; /* slightly above the html portal container */
+  pointer-events: auto;    /* clickable */
 }
 
 /* modal overlay class (if you want to switch from inline styles later) */
@@ -211,10 +215,8 @@
 }
 
 /* Ensure Drei / R3F Html portals sit below modals by default */
-.r3f-html, .drei-html, .html-portal, .hotspot {
-  z-index: 20 !important;
-  pointer-events: auto;
-}
+.r3f-html, .drei-html, .html-portal { z-index: 20 !important; pointer-events: none; }
+.hotspot { z-index: 21 !important; pointer-events: auto; }
 
 /* While a modal is open, disable interactions & pointer events on R3F/Drei portals */
 body.modal-open .r3f-html,
@@ -223,6 +225,15 @@ body.modal-open .html-portal,
 body.modal-open .hotspot {
   pointer-events: none !important;
   opacity: 0.0001 !important; /* visually hide if needed */
+}
+
+/* When blackout overlay is active, suppress portals/hotspots completely */
+body.blackout-open .r3f-html,
+body.blackout-open .drei-html,
+body.blackout-open .html-portal,
+body.blackout-open .hotspot {
+  pointer-events: none !important;
+  opacity: 0 !important;
 }
 
 /* make sure modal overlays are above everything */
@@ -332,7 +343,7 @@ body.modal-open .hotspot {
   border-radius: 1px;
   background: rgba(255,255,255,0.98);
   box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-  transition: max-height 300ms ease, opacity 250ms ease, transform 250ms ease;
+  transition: max-height 25ms ease, opacity 250ms ease, transform 250ms ease;
   opacity: 0;
   transform: translateY(8px);
   z-index: 65; /* arriba del backdrop */
@@ -393,10 +404,8 @@ body.modal-open .hotspot {
 .footer-bar { display: none; } /* default hidden on desktop */
 
 /* maintain hotspots beneath modals and preserve interactions normally */
-.r3f-html, .drei-html, .html-portal, .hotspot {
-  z-index: 20 !important;
-  pointer-events: auto;
-}
+.r3f-html, .drei-html, .html-portal { z-index: 20 !important; pointer-events: none; }
+.hotspot { z-index: 21 !important; pointer-events: auto; }
 
 /* when modal-open class is present we still hide interactions (kept) */
 body.modal-open .r3f-html,
@@ -420,9 +429,8 @@ body.modal-open .hotspot {
 }
 
 /* ensure hotspot portals sit below modals (defensive) */
-.r3f-html, .drei-html, .html-portal, .hotspot {
-  z-index: 20 !important;
-}
+.r3f-html, .drei-html, .html-portal { z-index: 20 !important; pointer-events: none; }
+.hotspot { z-index: 21 !important; pointer-events: auto; }
 body.modal-open .r3f-html,
 body.modal-open .drei-html,
 body.modal-open .html-portal,

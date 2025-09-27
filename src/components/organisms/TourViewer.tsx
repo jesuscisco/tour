@@ -27,54 +27,103 @@ export default function TourViewer({
   src,
   hotspots = [],
   onHotspotClick,
+  blackoutMs = 25,
 }: {
   src: string;
   hotspots?: HotspotDef[];
   onHotspotClick?: (id: string) => void;
+  blackoutMs?: number; // milliseconds the blackout stays after ready
 }) {
-  const [lastInteraction, setLastInteraction] = useState<number>(Date.now());
   const [contextLost, setContextLost] = useState(false);
   const [canvasReady, setCanvasReady] = useState(false); // <- hide-until-ready flag
+  const [blackout, setBlackout] = useState(false); // <- full-screen black overlay
+  const blackoutTimerRef = useRef<number | null>(null);
+  const navScheduledRef = useRef(false);
   const autoRotateDelay = 2500;
   const autoRotateSpeed = 0.0100;
+
+  // Trigger blackout immediately when user clicks a hotspot
+  const handleHotspotClick = (id: string) => {
+    if (navScheduledRef.current) return; // prevent multiple rapid clicks
+    setBlackout(true);
+    navScheduledRef.current = true;
+    // defer the actual src change to the next frame so blackout paints first
+    requestAnimationFrame(() => {
+      onHotspotClick?.(id);
+    });
+  };
+
+  // reset navigation guard when src changes (navigation started)
+  useEffect(() => {
+    navScheduledRef.current = false;
+  }, [src]);
 
   // reset ready flag whenever source changes so hide-until-ready re-applies
   useEffect(() => {
     setCanvasReady(false);
+    // show blackout immediately when a new src arrives
+    setBlackout(true);
+    // clear any previous timers
+    if (blackoutTimerRef.current) {
+      clearTimeout(blackoutTimerRef.current);
+      blackoutTimerRef.current = null;
+    }
   }, [src]);
+
+  // cleanup timer on unmount
+  useEffect(() => () => { if (blackoutTimerRef.current) clearTimeout(blackoutTimerRef.current); }, []);
+
+  // while blackout is shown, add a body class to suppress any portals visually above
+  useEffect(() => {
+    if (blackout) document.body.classList.add('blackout-open');
+    else document.body.classList.remove('blackout-open');
+    return () => document.body.classList.remove('blackout-open');
+  }, [blackout]);
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Suspense fallback={<div style={{ color: '#b58b00', padding: 24 }}>Cargando panorama…</div>}>
-        <div
-          aria-hidden={!canvasReady}
-          style={{
-            width: '100%',
-            height: '100vh',
-            opacity: canvasReady ? 1 : 0,
-            transition: 'opacity 240ms ease',
-            pointerEvents: canvasReady ? 'auto' : 'none',
-          }}
+        <Canvas
+          camera={{ fov: 85, position: [0, 0, 0.01] }}
+          dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1}
+          gl={{ antialias: true, powerPreference: 'low-power' }}
+          style={{ width: '100%', height: '100vh', display: 'block', opacity: canvasReady ? 1 : 0, transition: 'opacity 240ms ease' }}
         >
-          <Canvas
-            camera={{ fov: 85, position: [0, 0, 0.01] }}
-            dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1}
-            gl={{ antialias: true, powerPreference: 'low-power' }}
-          >
-            <Scene
-              src={src}
-              hotspots={hotspots}
-              onHotspotClick={onHotspotClick}
-              lastInteraction={lastInteraction}
-              setLastInteraction={() => setLastInteraction(Date.now())}
-              autoRotateDelay={autoRotateDelay}
-              autoRotateSpeed={autoRotateSpeed}
-              setContextLost={setContextLost}
-              onReady={(ready: boolean) => setCanvasReady(ready)}
-            />
-          </Canvas>
-        </div>
+          <Scene
+            src={src}
+            hotspots={hotspots}
+            onHotspotClick={handleHotspotClick}
+            autoRotateDelay={autoRotateDelay}
+            autoRotateSpeed={autoRotateSpeed}
+            setContextLost={setContextLost}
+            onReady={(ready: boolean) => {
+              setCanvasReady(ready);
+              if (ready) {
+                // keep screen black for 1s after ready/orientation
+                if (blackoutTimerRef.current) clearTimeout(blackoutTimerRef.current);
+                blackoutTimerRef.current = window.setTimeout(() => {
+                  setBlackout(false);
+                  blackoutTimerRef.current = null;
+                }, Math.max(0, blackoutMs));
+              }
+            }}
+          />
+        </Canvas>
       </Suspense>
+
+      {/* Blackout overlay to hide loading/initial orientation */}
+      <div
+        aria-hidden={!blackout}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: '#000',
+          opacity: blackout ? 1 : 0,
+          transition: blackout ? 'none' : 'opacity 240ms ease',
+          pointerEvents: blackout ? 'auto' : 'none',
+          zIndex: 999999, // ensure above all portals and UI
+        }}
+      />
 
       {contextLost && (
         <div style={{
@@ -96,8 +145,6 @@ function Scene({
   src,
   hotspots,
   onHotspotClick,
-  lastInteraction,
-  setLastInteraction,
   autoRotateDelay,
   autoRotateSpeed,
   setContextLost,
@@ -106,13 +153,12 @@ function Scene({
   src: string;
   hotspots: HotspotDef[];
   onHotspotClick?: (id: string) => void;
-  lastInteraction: number;
-  setLastInteraction: () => void;
   autoRotateDelay: number;
   autoRotateSpeed: number;
   setContextLost: (v: boolean) => void;
   onReady?: (ready: boolean) => void;
 }) {
+  const [lastInteraction, setLastInteraction] = React.useState<number>(Date.now());
   const [imageBitmap, setImageBitmap] = React.useState<ImageBitmap | null>(null);
 
   useEffect(() => {
@@ -156,10 +202,7 @@ function Scene({
     return t;
   }, [imageBitmap]);
 
-  // notify parent when texture becomes available (useEffect so it runs after texture memo sets)
-  useEffect(() => {
-    onReady?.(!!texture);
-  }, [texture, onReady]);
+  // We'll signal ready only AFTER we apply orientation to avoid any visible jump.
 
   const sphereRef = useRef<Mesh | null>(null);
   const groupRef = useRef<Group | null>(null);
@@ -191,7 +234,11 @@ function Scene({
   }
   const initR = initialTargetVec ? initialTargetVec.length() || 1 : 1;
   const initialGroupY = initialTargetVec ? -Math.atan2(initialTargetVec.x, initialTargetVec.z) : 0;
-  const initialPolar = initialTargetVec ? Math.acos(Math.max(-1, Math.min(1, initialTargetVec.y / initR))) : Math.PI / 2;
+  // compute polar and clamp to OrbitControls bounds to avoid internal clamping twitch
+  const rawPolar = initialTargetVec ? Math.acos(Math.max(-1, Math.min(1, initialTargetVec.y / initR))) : Math.PI / 2;
+  const MIN_POLAR = 0.3;
+  const MAX_POLAR = Math.PI - 0.3;
+  const initialPolar = Math.max(MIN_POLAR, Math.min(MAX_POLAR, rawPolar));
 
   useEffect(() => {
     if (!texture) return;
@@ -213,8 +260,10 @@ function Scene({
       camera.updateMatrixWorld();
     }
     // prevent instant auto-rotate kick
-    setLastInteraction();
-  }, [texture, initialGroupY, initialPolar]);
+    setLastInteraction(Date.now());
+    // signal ready on next frame so orientation is in place before fade-in
+    requestAnimationFrame(() => onReady?.(true));
+  }, [texture, initialGroupY, initialPolar, onReady, camera]);
 
   useFrame((state, delta) => {
     if (!texture) return;
@@ -231,7 +280,7 @@ function Scene({
 
   return (
     <>
-      <group ref={groupRef} rotation={[0, initialGroupY, 0]}>
+      <group ref={groupRef}>
         <mesh ref={sphereRef} scale={[1, 1, 1]}>
           <sphereGeometry args={[500, 80, 60]} />
           <meshBasicMaterial map={texture} side={BackSide} />
@@ -251,11 +300,12 @@ function Scene({
 
       <OrbitControls
         ref={controlsRef}
+        makeDefault
         enablePan={false}
         enableZoom={false}
         enableDamping={false}
-        onStart={setLastInteraction}
-        onChange={setLastInteraction}
+        onStart={() => setLastInteraction(Date.now())}
+        onChange={() => setLastInteraction(Date.now())}
         rotateSpeed={-0.4}
         minPolarAngle={0.3}
         maxPolarAngle={Math.PI - 0.3}

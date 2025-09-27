@@ -13,7 +13,7 @@ const files = fs.readdirSync(folder).filter(f => /\.(png|jpg|jpeg)$/i.test(f));
     try {
       await sharp(inPath)
         .resize(4096, 2048, { fit: 'inside' }) // reducido para evitar OOM GPU
-        .webp({ quality: 60 })
+        .webp({ quality: 70 })
         .toFile(outPath);
       console.log('Converted:', file, '→', `${name}.webp`);
     } catch (err) {
