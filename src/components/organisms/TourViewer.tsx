@@ -90,6 +90,7 @@ export default function TourViewer({
           style={{ width: '100%', height: '100vh', display: 'block', opacity: canvasReady ? 1 : 0, transition: 'opacity 240ms ease' }}
         >
           <Scene
+            key={src}
             src={src}
             hotspots={hotspots}
             onHotspotClick={handleHotspotClick}
@@ -164,6 +165,8 @@ function Scene({
   useEffect(() => {
     let mounted = true;
     let currentBitmap: ImageBitmap | null = null;
+    // Clear previous bitmap so old texture stops rendering immediately
+    setImageBitmap(null);
     (async () => {
       try {
         const res = await fetch(src);
@@ -184,8 +187,6 @@ function Scene({
       mounted = false;
       if (currentBitmap && typeof currentBitmap.close === 'function') currentBitmap.close();
     };
-        const [stabilizing, setStabilizing] = React.useState(false);
-        const framesSinceTextureRef = React.useRef(0);
   }, [src, setContextLost]);
 
   const texture = React.useMemo(() => {
