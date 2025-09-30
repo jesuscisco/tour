@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import React, { Suspense, useRef, useState, useEffect } from 'react';
-import { Texture, Vector3, BackSide, SRGBColorSpace, LinearMipMapLinearFilter } from 'three';
+import { Texture, Vector3, BackSide, SRGBColorSpace, LinearMipMapLinearFilter, NoToneMapping } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import type { Mesh, Group } from 'three';
 import { Html, OrbitControls } from '@react-three/drei';
@@ -87,6 +87,17 @@ export default function TourViewer({
           camera={{ fov: 85, position: [0, 0, 0.01] }}
           dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1}
           gl={{ antialias: true, powerPreference: 'low-power' }}
+          onCreated={({ gl }) => {
+            try {
+              // Ensure consistent color management across environments
+              // @ts-ignore
+              gl.outputColorSpace = SRGBColorSpace;
+              // @ts-ignore
+              gl.toneMapping = NoToneMapping;
+              // @ts-ignore
+              gl.toneMappingExposure = 1.0;
+            } catch {}
+          }}
           style={{ width: '100%', height: '100vh', display: 'block', opacity: canvasReady ? 1 : 0, transition: 'opacity 240ms ease' }}
         >
           <Scene
@@ -208,6 +219,9 @@ function Scene({
   const groupRef = useRef<Group | null>(null);
   const controlsRef = useRef<any>(null);
   const { camera, gl } = useThree();
+  const [stabilizing, setStabilizing] = React.useState(false);
+  const stableFramesRef = React.useRef(0);
+  const readySignaledRef = React.useRef(false);
 
   // quality tuning
   useEffect(() => {
@@ -242,6 +256,10 @@ function Scene({
 
   useEffect(() => {
     if (!texture) return;
+    // start stabilization window for initial frames
+    setStabilizing(true);
+    stableFramesRef.current = 0;
+    readySignaledRef.current = false;
     // apply immediately
     if (groupRef.current) groupRef.current.rotation.y = initialGroupY;
     if (controlsRef.current) {
@@ -261,12 +279,24 @@ function Scene({
     }
     // prevent instant auto-rotate kick
     setLastInteraction(Date.now());
-    // signal ready on next frame so orientation is in place before fade-in
-    requestAnimationFrame(() => onReady?.(true));
+    // do NOT signal ready yet; wait a couple frames in useFrame
   }, [texture, initialGroupY, initialPolar, onReady, camera]);
 
   useFrame((state, delta) => {
     if (!texture) return;
+
+    // allow a couple frames to render after orientation & texture updates (prod stability)
+    if (stabilizing) {
+      controlsRef.current?.update?.();
+      stableFramesRef.current += 1;
+      if (stableFramesRef.current >= 2 && !readySignaledRef.current) {
+        readySignaledRef.current = true;
+        setStabilizing(false);
+        onReady?.(true);
+      }
+      return; // skip autorotate during stabilization
+    }
+
     const idle = Date.now() - lastInteraction > autoRotateDelay;
     if (groupRef.current && idle) {
       groupRef.current.rotation.y += autoRotateSpeed * delta * 3;
@@ -304,6 +334,7 @@ function Scene({
         enablePan={false}
         enableZoom={false}
         enableDamping={false}
+        enabled={!stabilizing}
         onStart={() => setLastInteraction(Date.now())}
         onChange={() => setLastInteraction(Date.now())}
         rotateSpeed={-0.4}
