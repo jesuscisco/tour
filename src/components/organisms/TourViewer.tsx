@@ -6,6 +6,7 @@ import type { Mesh, Group } from 'three';
 import { Html, OrbitControls } from '@react-three/drei';
 import Hotspot from './Hotspot';
 import PANORAMA_META from '../../data/panoramas';
+import { loadPanoramaBitmap, prefetchPanoramas } from '../../utils/panoramaCache';
 
 const Canvas = dynamic(() => import('@react-three/fiber').then(m => m.Canvas), { ssr: false });
 
@@ -68,6 +69,11 @@ export default function TourViewer({
       clearTimeout(blackoutTimerRef.current);
       blackoutTimerRef.current = null;
     }
+    // safety: ensure blackout cannot get stuck if onReady never fires
+    const safetyId = window.setTimeout(() => {
+      setBlackout(false);
+    }, 5000);
+    return () => clearTimeout(safetyId);
   }, [src]);
 
   // cleanup timer on unmount
@@ -169,14 +175,7 @@ function Scene({
     setImageBitmap(null);
     (async () => {
       try {
-        const res = await fetch(src);
-        if (!res.ok) {
-          console.error('Failed fetching panorama', res.status, src);
-          setContextLost(true);
-          return;
-        }
-        const blob = await res.blob();
-        currentBitmap = await createImageBitmap(blob);
+        currentBitmap = await loadPanoramaBitmap(src);
         if (mounted) setImageBitmap(currentBitmap);
       } catch (err) {
         console.error('Error creating ImageBitmap', err);
@@ -185,9 +184,19 @@ function Scene({
     })();
     return () => {
       mounted = false;
-      if (currentBitmap && typeof currentBitmap.close === 'function') currentBitmap.close();
+      // Do NOT close the ImageBitmap here: it's managed by the shared cache (panoramaCache)
+      // and may be reused when navigating back. Closing here would invalidate the cached
+      // bitmap and cause black frames on revisit.
     };
   }, [src, setContextLost]);
+
+  // Prefetch likely next targets to reduce cold-start latency
+  useEffect(() => {
+    const nexts = (hotspots || [])
+      .map(h => h.target)
+      .filter((t): t is string => !!t);
+    if (nexts.length) prefetchPanoramas(nexts);
+  }, [hotspots]);
 
   const texture = React.useMemo(() => {
     if (!imageBitmap) return null;
