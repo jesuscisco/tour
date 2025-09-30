@@ -13,7 +13,7 @@ const MODAL_MAP: Record<Exclude<ModalKey, null>, { title: string; src: string }>
 };
 
 export default function Home() {
-  const [current, setCurrent] = useState('/panoramas/INICIO.png');
+  const [current, setCurrent] = useState('/panoramas/entrada.png');
   const hotspots = HOTSPOTS_MAP[current] ?? [];
   const [openModal, setOpenModal] = useState<ModalKey>(null);
   const [openOptionsModal, setOpenOptionsModal] = useState(false); // mobile options menu

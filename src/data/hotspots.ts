@@ -6,11 +6,11 @@ export type HotspotData = {
 };
 
 const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
-  '/panoramas/INICIO.png': [
+  '/panoramas/entrada.png': [
     { id: 'to-1', position: [800, -50, 50], label: 'Ir a 1', target: '/panoramas/1.png' },
   ],
   '/panoramas/1.png': [
-    { id: 'to-inicio', position: [-900, -80, -220], label: 'Ir a inicio', target: '/panoramas/INICIO.png' },
+    { id: 'to-entrada', position: [-900, -80, -220], label: 'Ir a entrada', target: '/panoramas/entrada.png' },
     { id: 'to-2', position: [500, -80, 500], label: 'Ir a 2', target: '/panoramas/2.png' },
     { id: 'to-2b', position: [-7, -1.4, 10], label: 'Ir a 2b', target: '/panoramas/11.png' },
   ],
