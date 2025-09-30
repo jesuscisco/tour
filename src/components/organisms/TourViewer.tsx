@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import React, { Suspense, useRef, useState, useEffect } from 'react';
-import { Texture, Vector3, BackSide, SRGBColorSpace, LinearMipMapLinearFilter, NoToneMapping } from 'three';
+import { Texture, Vector3, BackSide, SRGBColorSpace, LinearMipMapLinearFilter } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import type { Mesh, Group } from 'three';
 import { Html, OrbitControls } from '@react-three/drei';
@@ -87,17 +87,6 @@ export default function TourViewer({
           camera={{ fov: 85, position: [0, 0, 0.01] }}
           dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1}
           gl={{ antialias: true, powerPreference: 'low-power' }}
-          onCreated={({ gl }) => {
-            try {
-              // Ensure consistent color management across environments
-              // @ts-ignore
-              gl.outputColorSpace = SRGBColorSpace;
-              // @ts-ignore
-              gl.toneMapping = NoToneMapping;
-              // @ts-ignore
-              gl.toneMappingExposure = 1.0;
-            } catch {}
-          }}
           style={{ width: '100%', height: '100vh', display: 'block', opacity: canvasReady ? 1 : 0, transition: 'opacity 240ms ease' }}
         >
           <Scene
@@ -195,6 +184,8 @@ function Scene({
       mounted = false;
       if (currentBitmap && typeof currentBitmap.close === 'function') currentBitmap.close();
     };
+        const [stabilizing, setStabilizing] = React.useState(false);
+        const framesSinceTextureRef = React.useRef(0);
   }, [src, setContextLost]);
 
   const texture = React.useMemo(() => {
