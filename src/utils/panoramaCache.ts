@@ -10,6 +10,21 @@ type CacheRecord = {
 const MAX_ITEMS = 5; // increased cache size for smoother navigation
 const cache = new Map<string, CacheRecord>();
 
+const BASE = (process.env.NEXT_PUBLIC_BASE_PATH || '') as string;
+
+function resolveUrl(src: string): string {
+  try {
+    // absolute URL (http/https) — leave unchanged
+    if (/^https?:\/\//i.test(src)) return src;
+    // absolute path from root — prefix base path
+    if (src.startsWith('/')) return `${BASE}${src}`;
+    // relative path — also anchor at base
+    return `${BASE}/${src}`;
+  } catch {
+    return src;
+  }
+}
+
 function evictIfNeeded() {
   if (cache.size <= MAX_ITEMS) return;
   // evict least recently used items beyond MAX_ITEMS
@@ -42,7 +57,8 @@ export async function loadPanoramaBitmap(src: string): Promise<ImageBitmap> {
     return bmp;
   }
   const promise = (async () => {
-    const res = await fetch(src, { cache: 'force-cache' });
+    const url = resolveUrl(src);
+    const res = await fetch(url, { cache: 'force-cache' });
     if (!res.ok) throw new Error(`Failed to fetch ${src}: ${res.status}`);
     const blob = await res.blob();
     const bmp = await createImageBitmap(blob);

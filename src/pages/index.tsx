@@ -13,7 +13,8 @@ const MODAL_MAP: Record<Exclude<ModalKey, null>, { title: string; src: string }>
 };
 
 export default function Home() {
-  const [current, setCurrent] = useState('/panoramas/entrada.png');
+  const base = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const [current, setCurrent] = useState('/panoramas/INICIO.png');
   const hotspots = HOTSPOTS_MAP[current] ?? [];
   const [openModal, setOpenModal] = useState<ModalKey>(null);
   const [openOptionsModal, setOpenOptionsModal] = useState(false); // mobile options menu
@@ -41,29 +42,29 @@ export default function Home() {
   return (
     <div className="page-root">
       {/* site logo top-right */}
-      <img src="/logo.png" alt="Logo" className="site-logo" />
+      <img src={`${base}/logo.png`} alt="Logo" className="site-logo" />
 
       {/* Sidebar (desktop). labels under icons */}
       <aside className="sidebar" role="navigation" aria-label="Opciones">
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
           {/* Sidebar buttons with icons */}
           <button className="thumb" aria-label="Modelos" onClick={() => setOpenModal('modelos')} title="Modelos">
-            <img src="/icons/houses.svg" alt="" className="menu-icon" />
+            <img src={`${base}/icons/houses.svg`} alt="" className="menu-icon" />
             <div className="thumb-label">Modelos</div>
           </button>
 
           <button className="thumb" aria-label="Plantas" onClick={() => setOpenModal('plantas')} title="Plantas">
-            <img src="/icons/plantas.svg" alt="" className="menu-icon" />
+            <img src={`${base}/icons/plantas.svg`} alt="" className="menu-icon" />
             <div className="thumb-label">Plantas</div>
           </button>
 
           <button className="thumb" aria-label="Ubicación" onClick={() => setOpenModal('ubicacion')} title="Ubicación">
-            <img src="/icons/location.svg" alt="" className="menu-icon" />
+            <img src={`${base}/icons/location.svg`} alt="" className="menu-icon" />
             <div className="thumb-label">Ubicación</div>
           </button>
 
           <button className="thumb" aria-label="Info" onClick={() => setOpenModal('info')} title="Info">
-            <img src="/icons/info.svg" alt="" className="menu-icon" />
+            <img src={`${base}/icons/info.svg`} alt="" className="menu-icon" />
             <div className="thumb-label">Info</div>
           </button>
         </nav>
@@ -76,7 +77,7 @@ export default function Home() {
       {/* Desktop fixed CTA (bottom-right) - igual diseño que footer móvil */}
       <div className="visit-cta-desktop">
         <button className="footer-btn visit" onClick={handleVisitClick} aria-label="Agenda tu Visita">
-          <img src="/icons/calendar.svg" alt="" className="menu-icon small calendar-icon" style={{ marginRight: 8 }} />
+          <img src={`${base}/icons/calendar.svg`} alt="" className="menu-icon small calendar-icon" style={{ marginRight: 8 }} />
           <span>Agenda tu Visita</span>
         </button>
       </div>
@@ -84,7 +85,7 @@ export default function Home() {
       {/* Footer-bar (mobile): shows CTA and options button */}
       <div className="footer-bar" role="toolbar" aria-label="Acciones rápidas">
         <button className="footer-btn visit" onClick={handleVisitClick} aria-label="Agenda tu Visita">
-          <img src="/icons/calendar.svg" alt="" className="menu-icon small calendar-icon" style={{ marginRight: 8 }} />
+          <img src={`${base}/icons/calendar.svg`} alt="" className="menu-icon small calendar-icon" style={{ marginRight: 8 }} />
           <span>Agenda tu Visita</span>
         </button>
 
@@ -94,7 +95,7 @@ export default function Home() {
           aria-expanded={openOptionsModal}
           aria-label="Más opciones"
         >
-          <img src="/icons/menu.svg" alt="Opciones" className="menu-icon small" />
+          <img src={`${base}/icons/menu.svg`} alt="Opciones" className="menu-icon small" />
         </button>
       </div>
 
@@ -118,25 +119,25 @@ export default function Home() {
         <div className="options-inner">
           {/* 1 - Características (icono tipo 'i') */}
           <button className="thumb" onClick={() => { setOpenModal('caracteristicas'); setOpenOptionsModal(false); }}>
-            <img src="/icons/info.svg" alt="" className="menu-icon small" />
+            <img src={`${base}/icons/info.svg`} alt="" className="menu-icon small" />
             Características
           </button>
 
           {/* 2 - Plantas */}
           <button className="thumb" onClick={() => { setOpenModal('plantas'); setOpenOptionsModal(false); }}>
-            <img src="/icons/plantas.svg" alt="" className="menu-icon small" />
+            <img src={`${base}/icons/plantas.svg`} alt="" className="menu-icon small" />
             Plantas
           </button>
 
           {/* 3 - Ubicación */}
           <button className="thumb" onClick={() => { setOpenModal('ubicacion'); setOpenOptionsModal(false); }}>
-            <img src="/icons/location.svg" alt="" className="menu-icon small" />
+            <img src={`${base}/icons/location.svg`} alt="" className="menu-icon small" />
             Ubicación
           </button>
 
           {/* 4 - Otros Modelos */}
           <button className="thumb" onClick={() => { setOpenModal('modelos'); setOpenOptionsModal(false); }}>
-            <img src="/icons/houses.svg" alt="" className="menu-icon small" />
+            <img src={`${base}/icons/houses.svg`} alt="" className="menu-icon small" />
             Otros Modelos
           </button>
         </div>
@@ -171,7 +172,7 @@ export default function Home() {
             }}
           >
             <img
-              src={MODAL_MAP[openModal].src}
+              src={`${base}${MODAL_MAP[openModal].src}`}
               alt={MODAL_MAP[openModal].title}
               style={{
                 maxWidth: '100%',
