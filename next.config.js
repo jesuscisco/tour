@@ -9,6 +9,8 @@ module.exports = {
   assetPrefix: BASE_PATH || undefined,
   env: {
     NEXT_PUBLIC_BASE_PATH: BASE_PATH,
+    // Bump this to force-refresh assets when filenames don't change
+    NEXT_PUBLIC_ASSET_VERSION: process.env.ASSET_VERSION || '',
   },
   images: {
     domains: ['your-image-domain.com'], // Replace with your image domain if needed

@@ -11,6 +11,7 @@ const MAX_ITEMS = 5; // increased cache size for smoother navigation
 const cache = new Map<string, CacheRecord>();
 
 const BASE = (process.env.NEXT_PUBLIC_BASE_PATH || '') as string;
+const ASSET_V = (process.env.NEXT_PUBLIC_ASSET_VERSION || '') as string;
 
 function resolveUrl(src: string): string {
   try {
@@ -23,6 +24,11 @@ function resolveUrl(src: string): string {
   } catch {
     return src;
   }
+}
+
+function withVersion(url: string): string {
+  if (!ASSET_V) return url;
+  return url + (url.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(ASSET_V);
 }
 
 function evictIfNeeded() {
@@ -38,7 +44,8 @@ function evictIfNeeded() {
 
 export async function loadPanoramaBitmap(src: string): Promise<ImageBitmap> {
   if (typeof window === 'undefined') throw new Error('Bitmap load only in browser');
-  let rec = cache.get(src);
+  const key = withVersion(resolveUrl(src));
+  let rec = cache.get(key);
   if (rec?.bmp) {
     // Guard against externally-closed bitmaps (width/height become 0)
     const isClosed = (rec.bmp.width === 0 && rec.bmp.height === 0);
@@ -57,7 +64,7 @@ export async function loadPanoramaBitmap(src: string): Promise<ImageBitmap> {
     return bmp;
   }
   const promise = (async () => {
-    const url = resolveUrl(src);
+    const url = key; // already includes base and version
     const res = await fetch(url, { cache: 'force-cache' });
     if (!res.ok) throw new Error(`Failed to fetch ${src}: ${res.status}`);
     const blob = await res.blob();
@@ -65,7 +72,7 @@ export async function loadPanoramaBitmap(src: string): Promise<ImageBitmap> {
     return bmp;
   })();
   rec = { promise, bmp: null, lastUsed: Date.now() };
-  cache.set(src, rec);
+  cache.set(key, rec);
   try {
     const bmp = await promise;
     rec.bmp = bmp;
@@ -74,7 +81,7 @@ export async function loadPanoramaBitmap(src: string): Promise<ImageBitmap> {
     evictIfNeeded();
     return bmp;
   } catch (e) {
-    cache.delete(src);
+    cache.delete(key);
     throw e;
   }
 }
