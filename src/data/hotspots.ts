@@ -32,7 +32,7 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
 
   '/panoramas/3b.webp': [
     { id: 'to-2-again', position: [400, -170, -120], label: 'Ir a 2', target: '/panoramas/2.png' },
-    { id: 'to-5b', position: [400, 220, 100], label: 'Ir a 5b', target: '/panoramas/5b.png' },
+    { id: 'to-11', position: [400, 220, 100], label: 'Ir a 11', target: '/panoramas/11.png' },
   ],
 
   '/panoramas/11.png': [
@@ -44,7 +44,7 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
   ],
 
   '/panoramas/6b.png': [
-    { id: 'to-5b-again', position: [-60, -130, -900], label: 'Ir a 5b', target: '/panoramas/11.png' },
+    { id: 'to-11-again', position: [-60, -130, -900], label: 'Ir a 11', target: '/panoramas/11.png' },
   ],
 
 '/panoramas/7b.png': [
