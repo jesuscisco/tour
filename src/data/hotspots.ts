@@ -24,9 +24,9 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
   ],
     '/panoramas/4.png': [
     { id: 'to-3-again', position: [-80, -5, -3], label: 'Ir a 3', target: '/panoramas/3.png' },
-    { id: 'to-5', position: [80, 0, -5], label: 'Ir a 5', target: '/panoramas/5.png' },
+    { id: 'to-5', position: [80, 0, -5], label: 'Ir a 5', target: '/panoramas/15.png' },
   ],
-  '/panoramas/5.png': [
+  '/panoramas/15.png': [
     { id: 'to-4-again', position: [-80, -5, -3], label: 'Ir a 4', target: '/panoramas/4.png' },
   ],
 

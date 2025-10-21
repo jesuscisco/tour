@@ -23,6 +23,9 @@ const PANORAMA_META: Record<string, PanoramaMeta> = {
   '/panoramas/9b.png':    { initialLon: 300, initialLat: 2, radius: 480 },
   '/panoramas/10.png':   { initialLon: 0, initialLat: 2, radius: 480 },
    '/panoramas/11.png':    { initialLon: -30, initialLat: 2, radius: 480 },
+     '/panoramas/12.png':    { initialLon: 0, initialLat: 0, radius: 480 },
+       '/panoramas/15.png':    { initialLon: -50, initialLat: 0, radius: 480 },
 };
+
 
 export default PANORAMA_META;
