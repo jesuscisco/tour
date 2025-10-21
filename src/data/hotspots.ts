@@ -37,31 +37,31 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
 
   '/panoramas/13.png': [
     { id: 'to-12-again', position: [100, -130, 800], label: 'Ir a 12', target: '/panoramas/12.png' },
-    { id: 'to-6b', position: [-100, -20, 30], label: 'Ir a 6b', target: '/panoramas/6b.png' },
-    { id: 'to-7b', position: [-100, -20, -80], label: 'Ir a 7b', target: '/panoramas/7b.png' },
-    { id: 'to-8b', position: [-60, -130, -900], label: 'Ir a 8b', target: '/panoramas/8b.png' },
-    { id: 'to-9b', position: [500, -70, -140], label: 'Ir a 9b', target: '/panoramas/9b.png' },
+    { id: 'to-14', position: [-100, -20, 30], label: 'Ir a 14', target: '/panoramas/14.png' },
+    { id: 'to-17', position: [-100, -20, -80], label: 'Ir a 17', target: '/panoramas/17.png' },
+    { id: 'to-18', position: [-60, -130, -900], label: 'Ir a 18', target: '/panoramas/18.png' },
+    { id: 'to-19', position: [500, -70, -140], label: 'Ir a 19', target: '/panoramas/19.png' },
   ],
 
-  '/panoramas/6b.png': [
+  '/panoramas/14.png': [
     { id: 'to-13-again', position: [-60, -130, -900], label: 'Ir a 13', target: '/panoramas/13.png' },
   ],
 
-'/panoramas/7b.png': [
+'/panoramas/17.png': [
     { id: 'to-13-again', position:[-40, 0, 30], label: 'Ir a 13', target: '/panoramas/13.png' },
   ],
 
-  '/panoramas/8b.png': [
+  '/panoramas/18.png': [
     { id: 'to-13-again', position: [-100, 0, 60], label: 'Ir a 13', target: '/panoramas/13.png' },
   ],
 
-  '/panoramas/9b.png': [
+  '/panoramas/19.png': [
     { id: 'to-13-again', position: [-700, -100, -400], label: 'Ir a 13', target: '/panoramas/13.png' },
     { id: 'to-10', position: [-300, -40, 60], label: 'Ir a 10', target: '/panoramas/10.png' },
   ],
 
   '/panoramas/10.png': [
-    { id: 'to-9b-again', position: [-300, 0, -400], label: 'Ir a 1', target: '/panoramas/9b.png' },
+    { id: 'to-19-again', position: [-300, 0, -400], label: 'Ir a 1', target: '/panoramas/19.png' },
   ],
 };
 
