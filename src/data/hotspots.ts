@@ -21,6 +21,10 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
   '/panoramas/3.png': [
     { id: 'to-2-again', position: [350, 0, -700], label: 'Ir a 2', target: '/panoramas/2.png' },
     { id: 'to-4', position: [-120, 0, -115], label: 'Ir a 4', target: '/panoramas/4.png' },
+    { id: 'to-beta', position: [-450, 0, 600], label: 'Ir a beta', target: '/panoramas/beta.png' },
+  ],
+   '/panoramas/beta.png': [
+    { id: 'to-3-again', position: [-250, 0, -700], label: 'Ir a 2', target: '/panoramas/3.png' },
   ],
     '/panoramas/4.png': [
     { id: 'to-3-again', position: [-80, -5, -3], label: 'Ir a 3', target: '/panoramas/3.png' },
@@ -64,6 +68,8 @@ const HOTSPOTS_MAP: Record<string, HotspotData[]> = {
     { id: 'to-19-again', position: [-300, 0, -400], label: 'Ir a 1', target: '/panoramas/19.png' },
   ],
 };
+
+
 
 
 
